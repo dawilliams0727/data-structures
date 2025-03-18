@@ -13,7 +13,8 @@ class TestTreeHeight(unittest.TestCase):
             filepath = os.path.join(tests_folder, filename)
             if filename.endswith('.a'):
                 with open(filepath, 'r') as file:
-                    self.answer_files.append(file.readline().strip())
+                    results = file.readlines()
+                    self.answer_files.append(results)
             else:
                 with open(filepath, 'r') as file:
                     _ , parents = file.readlines()
