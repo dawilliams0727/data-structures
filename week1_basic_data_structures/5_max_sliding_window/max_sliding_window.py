@@ -8,74 +8,92 @@ def max_sliding_window_naive(sequence, m):
 
     return maximums
 
-def max_sliding_windows_dequeue(sequence, m):
+def max_sliding_windows_dequeue(sequence: list[int], m: int) -> list[int]:
+    """
+    Computes the maximum value in every sliding window of size m using a deque.
+
+    Args:
+        sequence (list[int]): The input list of integers.
+        m (int): The size of the sliding window.
+
+    Returns:
+        list[int]: List of maximum values for each window.
+    """
     if not sequence or m == 0:
         return []
-    
-    left, right = 0, 0
-    # Stores indices of elements in decreasing order
-    max_deque = deque()  
-    result = []
-    
+
+    left: int = 0
+    right: int = 0
+    max_deque: deque[int] = deque()  # Stores indices of elements in decreasing order
+    result: list[int] = []
+
     while right < len(sequence):
         # Remove elements from back that are smaller than the current element
         while max_deque and sequence[max_deque[-1]] <= sequence[right]:
             max_deque.pop()
-        
+
         max_deque.append(right)
-        
-        # Remove elements from front if they are out of window
+
+        # Remove elements from front if they are out of the current window
         if max_deque[0] < left:
             max_deque.popleft()
-        
 
-
-
-        # If the window has reached size m, record the maximum
+        # Record the max value once the window reaches size m
         if right >= m - 1:
-            result.append(sequence[max_deque[0]])  # Front of deque is max in window
-            left += 1  # Move left pointer
-        
-        right += 1  # Move right pointer
+            result.append(sequence[max_deque[0]])
+            left += 1  # Slide the window
+
+        right += 1
 
     return result
 
-def max_sliding_windows_stacks(sequence, n):
-    stack1 = []
-    stack1_max = []
-    stack2 = []
-    stack2_max = []
-    result = []
-    
+def max_sliding_windows_stacks(sequence: list[int], n: int) -> list[int]:
+    """
+    Computes the maximum in every sliding window of size `n` using a two-stack queue method.
+
+    Args:
+        sequence (list[int]): The input sequence of integers.
+        n (int): The size of the sliding window.
+
+    Returns:
+        list[int]: A list of the maximums for each window.
+    """
+    stack1: list[int] = []
+    stack1_max: list[int] = []
+    stack2: list[int] = []
+    stack2_max: list[int] = []
+    result: list[int] = []
+
     for item in sequence:
+        # Maintain window size by shifting elements from stack1 to stack2 if needed
         if len(stack1) >= n:
-            # move stack1 to stack2
             while stack1:
                 popped = stack1.pop()
                 if stack1_max and popped == stack1_max[-1]:
                     stack1_max.pop()
                 stack2.append(popped)
-                if stack2_max:
-                    if stack2_max[-1] <= popped:
-                        stack2_max.append(popped)
-                else:
+                if not stack2_max or popped >= stack2_max[-1]:
                     stack2_max.append(popped)
-        if stack2: 
-            popped = stack2.pop() # remove top element to make room for new item in stack 1
+
+        # Remove one from stack2 if total elements exceed window size
+        if stack2 and len(stack1) + len(stack2) >= n:
+            popped = stack2.pop()
             if stack2_max and popped == stack2_max[-1]:
-                stack2_max.pop() #remove maximum also
-        stack1.append(item)# add to stack1
-        if stack1_max:
-            if stack1_max[-1] <= item:
-                stack1_max.append(item) #update max
-        else:
+                stack2_max.pop()
+
+        # Push new item into stack1 and update max
+        stack1.append(item)
+        if not stack1_max or item >= stack1_max[-1]:
             stack1_max.append(item)
-        max1 = stack1_max[-1] if stack1_max else float("-inf")
-        max2 = stack2_max[-1] if stack2_max else float("-inf")
+
+        # Compute window max
         if len(stack1) + len(stack2) >= n:
+            max1 = stack1_max[-1] if stack1_max else float("-inf")
+            max2 = stack2_max[-1] if stack2_max else float("-inf")
             result.append(max(max1, max2))
 
     return result
+
 
 if __name__ == '__main__':
     n = int(input())

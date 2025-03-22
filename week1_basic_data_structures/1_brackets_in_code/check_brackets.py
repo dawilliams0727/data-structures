@@ -9,26 +9,35 @@ def are_matching(left, right):
     return (left + right) in ["()", "[]", "{}"]
 
 
-def find_mismatch(text):
-    opening_brackets_stack = []
-    opening_brackets_index = []
-    for i, next in enumerate(text):
-        if next in "([{":
-            # Process opening bracket, write your code here
-            opening_brackets_stack.append(next)
+def find_mismatch(text: str) -> str:
+    """
+    Checks for the first mismatched or unmatched bracket in a string.
+
+    Args:
+        text (str): The input string containing brackets.
+
+    Returns:
+        str: The 1-based index of the first mismatch or "Success" if all brackets are balanced.
+    """
+    opening_brackets_stack: list[str] = []
+    opening_brackets_index: list[int] = []
+
+    for i, char in enumerate(text):
+        if char in "([{":
+            # Process opening bracket
+            opening_brackets_stack.append(char)
             opening_brackets_index.append(i)
-        if next in ")]}":
-            # Process closing bracket, write your code here
-            if len(opening_brackets_stack) == 0:
-                return str(i+1)
-            # check if popped matches the current characters compliment
-            if not are_matching(opening_brackets_stack[-1], next):
-                return str(i+1)
-            else:
-                opening_brackets_stack.pop()
-                opening_brackets_index.pop()
-            
-    return "Success" if len(opening_brackets_stack) == 0 else str(opening_brackets_index[-1] + 1)
+        elif char in ")]}":
+            # Process closing bracket
+            if not opening_brackets_stack:
+                return str(i + 1)
+            if not are_matching(opening_brackets_stack[-1], char):
+                return str(i + 1)
+            opening_brackets_stack.pop()
+            opening_brackets_index.pop()
+
+    return "Success" if not opening_brackets_stack else str(opening_brackets_index[-1] + 1)
+
 
 def main():
     text = input()

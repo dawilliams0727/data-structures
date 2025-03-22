@@ -9,23 +9,33 @@ class Node():
         self.parent = parent if parent != -1 else None
         self.children = []
 
-def compute_height(n: int, parents: list[int]):
-    nodes = [Node(i, parents[i]) for i in range(n)]
-    root = None
+def compute_height(n: int, parents: list[int]) -> int:
+    """
+    Computes the height of a tree given in parent-pointer representation.
+
+    Args:
+        n (int): Number of nodes.
+        parents (list[int]): List where the value at each index is the parent of that node,
+                             or -1 if it is the root.
+
+    Returns:
+        int: The height of the tree.
+    """
+    nodes: list[Node] = [Node(i, parents[i]) for i in range(n)]
+    root: Node | None = None
+
+    # build tree structure
     for node in nodes:
-        if node.parent != None:
-            nodes[node.parent].children.append(nodes[node.n])
+        if node.parent is not None:
+            nodes[node.parent].children.append(node)
         else:
             root = node
 
-    def recursive(node):
-        height = 0
-        if len(node.children) == 0:
+    def recursive(node: Node) -> int:
+        if not node.children:
             return 1
-        for child in node.children:
-            height = max(height, recursive(child))
-        return 1 + height
-    
+        return 1 + max(recursive(child) for child in node.children)
+
     return recursive(root)
 
 def compute_height_naive(n, parents):
